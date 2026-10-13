@@ -29,6 +29,18 @@ export function findItemInTree(
   return null;
 }
 
+// Helper rekursif untuk mencari item berdasarkan nama
+function findItemByName(items: MenuItem[], name: string): MenuItem | null {
+  for (const item of items) {
+    if (item.name.toLowerCase() === name.toLowerCase()) return item;
+    if (item.children && item.children.length > 0) {
+      const found = findItemByName(item.children, name);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
 interface MenuState {
   menuTree: MenuItem[];
   selectedMenu: MenuItem | null;
@@ -38,8 +50,8 @@ interface MenuState {
   isLoading: boolean;
   isSubmitting: boolean;
   error: string | null;
-  isCreating: boolean; // Flag saat sedang membuat node baru (baik root maupun sub-item)
-  parentForNewItem: MenuItem | null; // Parent target saat membuat child baru
+  isCreating: boolean;
+  parentForNewItem: MenuItem | null;
 
   // Actions
   fetchMenuTree: () => Promise<void>;
@@ -75,7 +87,6 @@ export const useMenuStore = create<MenuState>((set, get) => ({
     try {
       const tree = await menuApi.getMenuTree();
       set((state) => {
-        // Jika belum ada root menu yang dipilih dan ada item di tree, pilih root pertama
         const defaultRootId =
           state.selectedRootMenuId || (tree.length > 0 ? tree[0].id : null);
 
@@ -84,10 +95,12 @@ export const useMenuStore = create<MenuState>((set, get) => ({
         const newExpanded = new Set(state.expandedIds);
         allIds.forEach((id) => newExpanded.add(id));
 
-        // Pertahankan selected menu jika masih ada di tree
+        // Pertahankan selected menu jika ada, atau default ke "System Code" sesuai Figma
         let updatedSelectedMenu = state.selectedMenu;
         if (state.selectedMenu) {
           updatedSelectedMenu = findItemInTree(tree, state.selectedMenu.id);
+        } else {
+          updatedSelectedMenu = findItemByName(tree, "System Code") || (tree.length > 0 ? tree[0] : null);
         }
 
         return {
@@ -162,7 +175,6 @@ export const useMenuStore = create<MenuState>((set, get) => ({
 
   startCreateChild: (parent) => {
     set((state) => {
-      // Pastikan parent sedang di-expand agar child yang dibuat nanti terlihat
       const nextExpanded = new Set(state.expandedIds);
       nextExpanded.add(parent.id);
       return {
