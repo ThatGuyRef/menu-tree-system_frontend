@@ -54,7 +54,9 @@ export function Sidebar() {
               <span className="w-1.5 h-1.5 bg-white rounded-full" />
             </div>
             <span className="text-xl font-black tracking-tight text-white">
-              CLOIT
+              Solusi
+              Teknologi
+              Kreatif
             </span>
           </div>
         )}
