@@ -4,6 +4,15 @@ Modern hierarchical menu management interface built with **Next.js 14 (App Route
 
 ---
 
+
+## 📸 Demo Screenshots (Figma Fidelity)
+
+| Desktop View | Mobile Responsive View |
+| :---: | :---: |
+| ![Desktop View](public/screenshots/demo_desktop.png) | <img src="public/screenshots/demo_mobile.png" width="280" /> |
+
+---
+
 ## ✨ Features
 
 - 🌳 **Unlimited Hierarchical Depth**: Recursive tree component supporting infinite nesting levels.
