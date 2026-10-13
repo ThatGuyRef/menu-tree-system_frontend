@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 16, 24, 40;
+  --background-rgb: 255, 255, 255;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background-color: #f9fafb;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Garis penghubung tree hierarki */
+.tree-line-vertical {
+  position: absolute;
+  left: 11px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: #cbd5e1;
+}
+
+.tree-line-horizontal {
+  position: absolute;
+  left: 11px;
+  top: 20px;
+  width: 16px;
+  height: 1px;
+  background-color: #cbd5e1;
+}
