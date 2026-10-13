@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useMenuStore } from "@/store/menuStore";
 import { Modal } from "@/components/ui/Modal";
-import { Trash2, Save, X, Info } from "lucide-react";
+import { Trash2, X } from "lucide-react";
 
 export function MenuForm() {
   const {
@@ -21,7 +21,6 @@ export function MenuForm() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Sinkronkan state lokal nama setiap kali menu terpilih berganti
   useEffect(() => {
     if (isCreating) {
       setName("");
@@ -32,32 +31,27 @@ export function MenuForm() {
     }
   }, [selectedMenu, isCreating]);
 
-  // Jika tidak ada item terpilih dan tidak sedang mode tambah
   if (!selectedMenu && !isCreating) {
     return (
-      <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center h-full min-h-[400px] text-gray-400">
-        <Info className="w-10 h-10 mb-3 text-gray-300" />
-        <h3 className="font-semibold text-gray-700 mb-1">No Menu Selected</h3>
-        <p className="text-sm max-w-xs">
-          Select a menu item from the tree on the left to view and edit details, or click &quot;+&quot; to add a new child item.
+      <div className="flex flex-col items-center justify-center text-center py-24 text-gray-400">
+        <p className="text-sm">
+          Select an item from the tree or click &quot;+&quot; to manage menu item
         </p>
       </div>
     );
   }
 
-  // Hitung depth yang akan ditampilkan
   const currentDepth = isCreating
     ? parentForNewItem
       ? parentForNewItem.depth + 1
       : 0
     : selectedMenu?.depth ?? 0;
 
-  // Nama parent
   const parentName = isCreating
     ? parentForNewItem
       ? parentForNewItem.name
-      : "Root (No Parent)"
-    : selectedMenu?.parent?.name ?? (selectedMenu?.parentId ? "Parent Menu" : "Root (No Parent)");
+      : "Root"
+    : selectedMenu?.parent?.name ?? (selectedMenu?.parentId ? "Systems" : "Root");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,92 +83,80 @@ export function MenuForm() {
 
   return (
     <>
-      <div className="bg-white rounded-3xl p-6 lg:p-8 shadow-sm border border-gray-100">
-        <div className="flex items-center justify-between pb-6 mb-6 border-b border-gray-100">
-          <div>
-            <h2 className="text-lg font-bold text-gray-900">
-              {isCreating
-                ? parentForNewItem
-                  ? `Add Sub-Menu under "${parentForNewItem.name}"`
-                  : "Add Root Menu"
-                : "Menu Details"}
-            </h2>
-            <p className="text-xs text-gray-500 mt-0.5">
-              {isCreating
-                ? "Enter the title for your new menu entry"
-                : "Manage and configure menu item parameters"}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
+      <div className="w-full max-w-lg pt-2 lg:pt-8">
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            {isCreating ? "Create Menu Item" : "Menu Details"}
+          </span>
+          <div className="flex items-center gap-1">
             {!isCreating && selectedMenu && (
               <button
                 type="button"
                 onClick={() => setIsDeleteModalOpen(true)}
                 disabled={isSubmitting}
-                className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl transition-colors disabled:opacity-50"
-                title="Delete this menu"
+                className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                title="Delete menu"
               >
-                <Trash2 className="w-5 h-5" />
+                <Trash2 className="w-4 h-4" />
               </button>
             )}
             {isCreating && (
               <button
                 type="button"
                 onClick={cancelCreating}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+                className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg"
                 title="Cancel"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             )}
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Menu ID (Read-only) */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Menu ID */}
           <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-2">
+            <label className="block text-xs font-medium text-gray-500 mb-1.5">
               Menu ID
             </label>
             <input
               type="text"
               readOnly
               value={isCreating ? "Auto-generated UUID" : selectedMenu?.id || ""}
-              className="w-full bg-gray-100 border border-gray-200 text-gray-500 text-sm font-mono rounded-2xl py-3 px-4 cursor-not-allowed select-all"
+              className="w-full bg-[#EAECF0]/60 text-gray-500 text-xs font-mono rounded-2xl py-3 px-4 cursor-not-allowed select-all border-none focus:outline-none"
             />
           </div>
 
-          {/* Depth (Read-only) */}
+          {/* Depth */}
           <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-2">
+            <label className="block text-xs font-medium text-gray-500 mb-1.5">
               Depth
             </label>
             <input
               type="text"
               readOnly
               value={currentDepth}
-              className="w-full bg-gray-100 border border-gray-200 text-gray-500 text-sm font-medium rounded-2xl py-3 px-4 cursor-not-allowed"
+              className="w-full bg-[#EAECF0]/60 text-gray-700 text-xs font-medium rounded-2xl py-3 px-4 cursor-not-allowed border-none focus:outline-none"
             />
           </div>
 
-          {/* Parent Data (Read-only) */}
+          {/* Parent Data */}
           <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-2">
+            <label className="block text-xs font-medium text-gray-500 mb-1.5">
               Parent Data
             </label>
             <input
               type="text"
               readOnly
               value={parentName}
-              className="w-full bg-gray-100 border border-gray-200 text-gray-500 text-sm font-medium rounded-2xl py-3 px-4 cursor-not-allowed"
+              className="w-full bg-[#EAECF0]/60 text-gray-700 text-xs font-medium rounded-2xl py-3 px-4 cursor-not-allowed border-none focus:outline-none"
             />
           </div>
 
-          {/* Name (Editable) */}
+          {/* Name */}
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-2">
-              Name <span className="text-red-500">*</span>
+            <label className="block text-xs font-medium text-gray-500 mb-1.5">
+              Name
             </label>
             <input
               type="text"
@@ -184,42 +166,39 @@ export function MenuForm() {
                 if (formError) setFormError(null);
               }}
               placeholder="e.g. System Code"
-              className={`w-full bg-gray-50 border text-gray-900 text-sm rounded-2xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all ${
-                formError ? "border-red-400" : "border-gray-200"
+              className={`w-full bg-[#EAECF0]/60 text-gray-900 text-xs font-medium rounded-2xl py-3 px-4 border-none focus:outline-none focus:ring-2 focus:ring-[#0055D6] focus:bg-white transition-all ${
+                formError ? "ring-2 ring-red-400" : ""
               }`}
             />
             {formError && (
-              <p className="text-xs text-red-500 mt-1.5">{formError}</p>
+              <p className="text-xs text-red-500 mt-1">{formError}</p>
             )}
           </div>
 
-          {/* Tombol Save */}
-          <div className="pt-2">
+          {/* Save Button */}
+          <div className="pt-4">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full sm:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full py-3.5 px-6 bg-[#0055D6] hover:bg-blue-700 text-white text-sm font-semibold rounded-full shadow-lg shadow-[#0055D6]/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {isSubmitting ? (
                 <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <Save className="w-4 h-4" />
-              )}
-              {isCreating ? "Create Item" : "Save Changes"}
+              ) : null}
+              Save
             </button>
           </div>
         </form>
       </div>
 
-      {/* Modal Dialog Konfirmasi Delete */}
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleDelete}
         isLoading={isSubmitting}
-        title="Delete Menu Item"
-        description={`Are you sure you want to delete "${selectedMenu?.name}"? All nested sub-items under this menu will also be deleted permanently.`}
-        confirmText="Yes, Delete"
+        title="Delete Menu"
+        description={`Are you sure you want to delete "${selectedMenu?.name}"? All sub-items under this menu will also be removed.`}
+        confirmText="Delete"
       />
     </>
   );
